@@ -1,0 +1,29 @@
+services:
+  pow-tcp-server:
+    build:
+      context: .
+      dockerfile: build/server/Dockerfile
+    image: pow-tcp-server:latest
+    container_name: pow-tcp-server
+    restart: no
+    environment:
+      SERVER_PORT: "9000"
+      HASHCASH_SECRET: "acc04a50-d0ff-4893-b50d-eec0a636f1e0"
+      HASHCASH_COMPLEXITY: "24"
+      HASHCASH_TTL: "1m"
+    volumes:
+      - ./config.yaml:/app/config.yaml
+    ports:
+      - "9000:9000"
+
+  pow-tcp-client:
+    build:
+      context: .
+      dockerfile: build/client/Dockerfile
+    image: pow-tcp-client:latest
+    container_name: pow-tcp-client
+    environment:
+      QUOTES_SERVER_ADDR: "pow-tcp-server:9000"
+    depends_on:
+      - pow-tcp-server
+    restart: always
